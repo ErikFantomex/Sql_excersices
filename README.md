@@ -15,3 +15,6 @@
 5. x (Extra) El código entregado tiene falta de documentación en sus funciones, por lo que también deberás documentar las funciones correctamente
 
 Marcados con x los retos ya realizados
+
+<img src="https://github.com/ErikFantomex/front-challenge/blob/master/reto1.png" alt="banner"/>
+
