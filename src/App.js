@@ -221,6 +221,7 @@ const Component = ({
           src={photo?.url}
           alt={photo?.title}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          loading="lazy"
         />
         <button onClick={() => removeMoveable(id)} style={{ zIndex: 999 }}>
           Remove
