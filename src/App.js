@@ -92,7 +92,7 @@ const App = () => {
             isSelected={selected === item.id}
             removeMoveable={removeMoveable}
             photo={photos[index % photos.length]}
-            parentRef={parentRef} // Pasa la referencia del contenedor padre al componente Moveable
+            parentRef={parentRef} // Pasa la referencia al contenedor padre
           />
         ))}
       </div>
@@ -101,96 +101,42 @@ const App = () => {
 };
 
 const Component = ({
-  updateMoveable,
+  id,
   top,
   left,
   width,
   height,
-  index,
   color,
-  id,
+  updateMoveable,
+  handleResizeStart,
   setSelected,
-  isSelected = false,
-  updateEnd,
+  isSelected,
   removeMoveable,
   photo,
-  parentRef, // Recibe la referencia al contenedor padre
+  parentRef,
 }) => {
   const ref = useRef();
   const moveableRef = useRef();
 
-  const [nodoReferencia, setNodoReferencia] = useState({
-    top,
-    left,
-    width,
-    height,
-    index,
-    color,
-    id,
-  });
+  useEffect(() => {
+    // Se actualiza el componente Moveable cuando cambian los valores
+    moveableRef.current.updateRect();
+  }, [top, left, width, height]);
 
   const onResize = (e) => {
-    const newWidth = e.width;
-    const newHeight = e.height;
-
-    // Se actualiza el componente Moveable con los nuevos valores
-    updateMoveable(id, {
-      top,
-      left,
-      width: newWidth,
-      height: newHeight,
-      color,
-    });
-
-    const beforeTranslate = e.drag.beforeTranslate;
-
-    ref.current.style.width = `${e.width}px`;
-    ref.current.style.height = `${e.height}px`;
-
-    let translateX = beforeTranslate[0];
-    let translateY = beforeTranslate[1];
-
-    ref.current.style.transform = `translate(${translateX}px, ${translateY}px)`;
-
-    setNodoReferencia({
-      ...nodoReferencia,
-      translateX,
-      translateY,
-      top: top + translateY < 0 ? 0 : top + translateY,
-      left: left + translateX < 0 ? 0 : left + translateX,
-    });
+    const { width, height } = e;
+    updateMoveable(id, { top, left, width, height });
   };
 
-  const onResizeEnd = (e) => {
-    const newWidth = e.lastEvent?.width;
-    const newHeight = e.lastEvent?.height;
-
-    const { lastEvent } = e;
-    const { drag } = lastEvent;
-    const { beforeTranslate } = drag;
-
-    const absoluteTop = top + beforeTranslate[1];
-    const absoluteLeft = left + beforeTranslate[0];
-
-    // Se actualiza el componente Moveable con los nuevos valores finales
-    updateMoveable(
-      id,
-      {
-        top: absoluteTop,
-        left: absoluteLeft,
-        width: newWidth,
-        height: newHeight,
-        color,
-      },
-      true
-    );
+  const onResizeEnd = () => {
+    updateMoveable(id, { top, left, width, height }, true);
   };
 
   return (
     <>
       <div
         ref={ref}
-        className="draggable"
+        className={`draggable ${isSelected ? "selected" : ""}`}
         id={"component-" + id}
         style={{
           position: "absolute",
@@ -203,13 +149,12 @@ const Component = ({
         onClick={() => setSelected(id)}
       >
         <img
-          src={photo?.url}
+          src={photo?.thumbnailUrl}
           alt={photo?.title}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          loading="lazy"
         />
-        <button onClick={() => removeMoveable(id)} style={{ zIndex: 999 }}>
-          Remove
+        <button className="delete" onClick={() => removeMoveable(id)}>
+          Delete
         </button>
       </div>
 
@@ -219,7 +164,6 @@ const Component = ({
         resizable
         draggable
         onDrag={(e) => {
-          // Se actualiza el componente Moveable durante el arrastre
           updateMoveable(id, {
             top: e.top,
             left: e.left,
@@ -229,26 +173,35 @@ const Component = ({
           });
         }}
         onResize={onResize}
+        onResizeStart={(e) => handleResizeStart(id, e)}
         onResizeEnd={onResizeEnd}
-        onDragEnd={() => updateMoveable(id, { top, left, width, height, color }, true)}
-        parent={parentRef.current} // Establece el contenedor padre
+        onDragEnd={() =>
+          updateMoveable(id, { top, left, width, height, color }, true)
+        }
+        parent={parentRef.current} // Utiliza la referencia al contenedor padre
         origin={false}
         keepRatio={false}
         edge={false}
         throttleResize={0}
         throttleDrag={0}
-        renderDirections={["nw", "ne", "sw", "se"]}
+        renderDirections={["nw", "n", "ne", "w", "e", "sw", "s", "se"]} // Incluye todos los puntos de redimensionamiento
         rotatable={false}
         snappable={true}
         snappers={[
-          // Permite que el componente se ajuste a los bordes del contenedor padre
-          ({ left, top, right, bottom }) => [Math.round(left), Math.round(top), Math.round(right), Math.round(bottom)],
+          ({ left, top, right, bottom }) => [
+            Math.round(left),
+            Math.round(top),
+            Math.round(right),
+            Math.round(bottom),
+          ],
         ]}
         snappableRadius={10}
         snapCenter={true}
         snapVertical={true}
         snapHorizontal={true}
-        onRenderEnd={() => updateMoveable(id, { top, left, width, height, color }, true)}
+        onRenderEnd={() =>
+          updateMoveable(id, { top, left, width, height, color }, true)
+        }
       />
     </>
   );
