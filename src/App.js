@@ -117,6 +117,7 @@ const Component = ({
   parentRef, // Recibe la referencia al contenedor padre
 }) => {
   const ref = useRef();
+  const moveableRef = useRef();
 
   const [nodoReferencia, setNodoReferencia] = useState({
     top,
@@ -129,17 +130,8 @@ const Component = ({
   });
 
   const onResize = (e) => {
-    let newWidth = e.width;
-    let newHeight = e.height;
-
-    const positionMaxTop = top + newHeight;
-    const positionMaxLeft = left + newWidth;
-
-    // Se ajusta el ancho y alto del componente si se excede el límite del contenedor padre
-    if (positionMaxTop > parentRef.current?.offsetHeight)
-      newHeight = parentRef.current?.offsetHeight - top;
-    if (positionMaxLeft > parentRef.current?.offsetWidth)
-      newWidth = parentRef.current?.offsetWidth - left;
+    const newWidth = e.width;
+    const newHeight = e.height;
 
     // Se actualiza el componente Moveable con los nuevos valores
     updateMoveable(id, {
@@ -170,17 +162,8 @@ const Component = ({
   };
 
   const onResizeEnd = (e) => {
-    let newWidth = e.lastEvent?.width;
-    let newHeight = e.lastEvent?.height;
-
-    const positionMaxTop = top + newHeight;
-    const positionMaxLeft = left + newWidth;
-
-    // Se ajusta el ancho y alto del componente si se excede el límite del contenedor padre
-    if (positionMaxTop > parentRef.current?.offsetHeight)
-      newHeight = parentRef.current?.offsetHeight - top;
-    if (positionMaxLeft > parentRef.current?.offsetWidth)
-      newWidth = parentRef.current?.offsetWidth - left;
+    const newWidth = e.lastEvent?.width;
+    const newHeight = e.lastEvent?.height;
 
     const { lastEvent } = e;
     const { drag } = lastEvent;
@@ -231,6 +214,7 @@ const Component = ({
       </div>
 
       <Moveable
+        ref={moveableRef}
         target={ref.current}
         resizable
         draggable
@@ -246,13 +230,25 @@ const Component = ({
         }}
         onResize={onResize}
         onResizeEnd={onResizeEnd}
-        keepRatio={false}
-        throttleResize={1}
-        renderDirections={["nw", "n", "ne", "w", "e", "sw", "s", "se"]}
-        edge={false}
-        zoom={1}
+        onDragEnd={() => updateMoveable(id, { top, left, width, height, color }, true)}
+        parent={parentRef.current} // Establece el contenedor padre
         origin={false}
-        padding={{ left: 0, top: 0, right: 0, bottom: 0 }}
+        keepRatio={false}
+        edge={false}
+        throttleResize={0}
+        throttleDrag={0}
+        renderDirections={["nw", "ne", "sw", "se"]}
+        rotatable={false}
+        snappable={true}
+        snappers={[
+          // Permite que el componente se ajuste a los bordes del contenedor padre
+          ({ left, top, right, bottom }) => [Math.round(left), Math.round(top), Math.round(right), Math.round(bottom)],
+        ]}
+        snappableRadius={10}
+        snapCenter={true}
+        snapVertical={true}
+        snapHorizontal={true}
+        onRenderEnd={() => updateMoveable(id, { top, left, width, height, color }, true)}
       />
     </>
   );
