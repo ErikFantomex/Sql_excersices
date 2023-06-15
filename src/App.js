@@ -66,11 +66,14 @@ const App = () => {
     }
   };
 
+  const parentRef = useRef(null); // Referencia al contenedor padre
+
   return (
     <main style={{ height: "100vh", width: "100vw" }}>
       <button onClick={addMoveable}>Add Moveable</button>
       <div
         id="parent"
+        ref={parentRef} // Referencia al contenedor padre
         style={{
           position: "relative",
           background: "black",
@@ -89,6 +92,7 @@ const App = () => {
             isSelected={selected === item.id}
             removeMoveable={removeMoveable}
             photo={photos[index % photos.length]}
+            parentRef={parentRef} // Pasa la referencia del contenedor padre al componente Moveable
           />
         ))}
       </div>
@@ -110,6 +114,7 @@ const Component = ({
   updateEnd,
   removeMoveable,
   photo,
+  parentRef, // Recibe la referencia al contenedor padre
 }) => {
   const ref = useRef();
 
@@ -123,9 +128,6 @@ const Component = ({
     id,
   });
 
-  const parent = document.getElementById("parent");
-  const parentBounds = parent?.getBoundingClientRect();
-
   const onResize = (e) => {
     let newWidth = e.width;
     let newHeight = e.height;
@@ -134,10 +136,10 @@ const Component = ({
     const positionMaxLeft = left + newWidth;
 
     // Se ajusta el ancho y alto del componente si se excede el límite del contenedor padre
-    if (positionMaxTop > parentBounds?.height)
-      newHeight = parentBounds?.height - top;
-    if (positionMaxLeft > parentBounds?.width)
-      newWidth = parentBounds?.width - left;
+    if (positionMaxTop > parentRef.current?.offsetHeight)
+      newHeight = parentRef.current?.offsetHeight - top;
+    if (positionMaxLeft > parentRef.current?.offsetWidth)
+      newWidth = parentRef.current?.offsetWidth - left;
 
     // Se actualiza el componente Moveable con los nuevos valores
     updateMoveable(id, {
@@ -175,10 +177,10 @@ const Component = ({
     const positionMaxLeft = left + newWidth;
 
     // Se ajusta el ancho y alto del componente si se excede el límite del contenedor padre
-    if (positionMaxTop > parentBounds?.height)
-      newHeight = parentBounds?.height - top;
-    if (positionMaxLeft > parentBounds?.width)
-      newWidth = parentBounds?.width - left;
+    if (positionMaxTop > parentRef.current?.offsetHeight)
+      newHeight = parentRef.current?.offsetHeight - top;
+    if (positionMaxLeft > parentRef.current?.offsetWidth)
+      newWidth = parentRef.current?.offsetWidth - left;
 
     const { lastEvent } = e;
     const { drag } = lastEvent;
