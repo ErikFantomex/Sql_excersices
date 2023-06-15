@@ -11,3 +11,18 @@
 5. (Extra) La librería tiene la capacidad de mostrar las líneas guía de cada componente, debes mostrarlas cada que se haga drag del componente seleccionado. La documentación de la librería está aquí: https://daybrush.com/moveable/release/latest/doc/
 
 5. (Extra) El código entregado tiene falta de documentación en sus funciones, por lo que también deberás documentar las funciones correctamente
+
+
+# Respuestasa a los distintos retos 
+
+
+
+
+
+
+
+
+
+
+
+
