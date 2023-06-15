@@ -1,4 +1,4 @@
-# Respuestas para el kosmo challengue 2023 
+# Respuestas para el reto kosmo 2023   
 
 1. Los componentes no deben de salirse del div con id "parent" al arrastrarse
 
