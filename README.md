@@ -4,7 +4,7 @@
 
 2. x Cada componente debe de tener una imagen única, la cual con estilos propios, no debe salir del componente al que se le hace resize y deben de tener un fit diferente "cover", "contain", etc. e
   
-  **Esta se obtiene de un fetch a la api "https://jsonplaceholder.typicode.com/photos"**
+  **Esta se obtiene de un fetch a la api "[https://jsonplaceholder.typicode.com/photos](https://pg-sql.com/)"**
 
 3. x Se debe de mantener la selección correctamente al hacer resize o drag, desde cualquiera de los 8 puntos (es decir, debe abarcar el componente mismo, no debe de estar abarcando cosas fuera de el) **Referencia del comportamiento que se debe corregir (Video 1)**
 
